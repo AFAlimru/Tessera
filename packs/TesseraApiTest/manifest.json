@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Tessera API 測試",
+    "description": "F3+K 在腳下方塊上切換 tesseratest:level（1 金、2 綠寶石、3 紅石、清除）",
+    "uuid": "88c6e427-c497-4d1d-97fb-e3e7699c88d8",
+    "version": [
+      0,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      60
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "f983bb3d-cf08-44fe-ab91-06804c73daa9",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    }
+  ]
+}

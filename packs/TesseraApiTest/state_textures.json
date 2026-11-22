@@ -1,0 +1,264 @@
+{
+ "format_version": 1,
+ "rules": [
+  {
+   "block": [
+    "grass_block",
+    "dirt",
+    "stone",
+    "sand",
+    "snow",
+    "oak_planks",
+    "cobblestone",
+    "deepslate",
+    "white_concrete"
+   ],
+   "when": {
+    "tesseratest:level": 1
+   },
+   "replace": {
+    "*": "gold_block"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "grass_block",
+    "dirt",
+    "stone",
+    "sand",
+    "snow",
+    "oak_planks",
+    "cobblestone",
+    "deepslate",
+    "white_concrete"
+   ],
+   "when": {
+    "tesseratest:level": 2
+   },
+   "replace": {
+    "*": "emerald_block"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "grass_block",
+    "dirt",
+    "stone",
+    "sand",
+    "snow",
+    "oak_planks",
+    "cobblestone",
+    "deepslate",
+    "white_concrete"
+   ],
+   "when": {
+    "tesseratest:level": 3
+   },
+   "replace": {
+    "*": "redstone_block"
+   },
+   "tint": "none"
+  },
+  {
+   "block": "white_concrete",
+   "when": {
+    "tesseratest:parity": true
+   },
+   "replace": {
+    "*": "gold_block"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 1
+   },
+   "replace": {
+    "*": "wool_colored_lime"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 2
+   },
+   "replace": {
+    "*": "wool_colored_green"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 3
+   },
+   "replace": {
+    "*": "wool_colored_yellow"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 4
+   },
+   "replace": {
+    "*": "wool_colored_orange"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 5
+   },
+   "replace": {
+    "*": "wool_colored_red"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 6
+   },
+   "replace": {
+    "*": "wool_colored_magenta"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "oak_leaves",
+    "birch_leaves",
+    "spruce_leaves",
+    "jungle_leaves",
+    "acacia_leaves",
+    "dark_oak_leaves",
+    "mangrove_leaves",
+    "cherry_leaves",
+    "azalea_leaves",
+    "pale_oak_leaves"
+   ],
+   "when": {
+    "tessera:distance": 7
+   },
+   "replace": {
+    "*": "wool_colored_black"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "target",
+    "sculk_sensor",
+    "calibrated_sculk_sensor"
+   ],
+   "when": {
+    "tessera:signal": "1..5"
+   },
+   "replace": {
+    "*": "wool_colored_lime"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "target",
+    "sculk_sensor",
+    "calibrated_sculk_sensor"
+   ],
+   "when": {
+    "tessera:signal": "6..10"
+   },
+   "replace": {
+    "*": "wool_colored_yellow"
+   },
+   "tint": "none"
+  },
+  {
+   "block": [
+    "target",
+    "sculk_sensor",
+    "calibrated_sculk_sensor"
+   ],
+   "when": {
+    "tessera:signal": "11..15"
+   },
+   "replace": {
+    "*": "wool_colored_red"
+   },
+   "tint": "none"
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "${modName}",
+    "entry": "${modFile}",
+    "version": "${modVersion}",
+    "type": "native",
+    "platform": "client",
+    "description": "Java resource pack features for Bedrock; a prerequisite library for packs and mods (Java 資源包功能前置庫)",
+    "author": "AFAlimru",
+    "modmenu": {
+        "badges": [
+            "library",
+            "client"
+        ],
+        "authors": [
+            "AFAlimru"
+        ],
+        "description": "Java 資源包功能的前置庫：讓 Bedrock 讀取 Java 材質包的方塊狀態、3D 模型、CTM、CIT、物品定義與 labPBR，並提供 API 給其他模組與材質包使用。"
+    }
+}

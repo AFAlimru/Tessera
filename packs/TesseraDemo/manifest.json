@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Tessera Demo",
+    "description": "Redstone power and weighted plate demo for Tessera",
+    "uuid": "280d3fbf-db19-4088-8920-f4ba102528fb",
+    "version": [
+      0,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      60
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "4f6e1f44-d4b4-4536-a297-4e5ebc31b5cb",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    }
+  ]
+}

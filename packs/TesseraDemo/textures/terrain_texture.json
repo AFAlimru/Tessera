@@ -1,0 +1,404 @@
+{
+  "resource_pack_name": "TesseraDemo",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "tessera_dust_cross_p0": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p0"
+    },
+    "tessera_dust_line_p0": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p0"
+    },
+    "tessera_dust_climb_p0": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p0"
+    },
+    "tessera_plate_p0": {
+      "textures": "textures/blocks/tessera/tessera_plate_p0"
+    },
+    "tessera_dust_cross_p1": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p1"
+    },
+    "tessera_dust_line_p1": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p1"
+    },
+    "tessera_dust_climb_p1": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p1"
+    },
+    "tessera_plate_p1": {
+      "textures": "textures/blocks/tessera/tessera_plate_p1"
+    },
+    "tessera_dust_cross_p2": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p2"
+    },
+    "tessera_dust_line_p2": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p2"
+    },
+    "tessera_dust_climb_p2": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p2"
+    },
+    "tessera_plate_p2": {
+      "textures": "textures/blocks/tessera/tessera_plate_p2"
+    },
+    "tessera_dust_cross_p3": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p3"
+    },
+    "tessera_dust_line_p3": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p3"
+    },
+    "tessera_dust_climb_p3": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p3"
+    },
+    "tessera_plate_p3": {
+      "textures": "textures/blocks/tessera/tessera_plate_p3"
+    },
+    "tessera_dust_cross_p4": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p4"
+    },
+    "tessera_dust_line_p4": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p4"
+    },
+    "tessera_dust_climb_p4": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p4"
+    },
+    "tessera_plate_p4": {
+      "textures": "textures/blocks/tessera/tessera_plate_p4"
+    },
+    "tessera_dust_cross_p5": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p5"
+    },
+    "tessera_dust_line_p5": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p5"
+    },
+    "tessera_dust_climb_p5": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p5"
+    },
+    "tessera_plate_p5": {
+      "textures": "textures/blocks/tessera/tessera_plate_p5"
+    },
+    "tessera_dust_cross_p6": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p6"
+    },
+    "tessera_dust_line_p6": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p6"
+    },
+    "tessera_dust_climb_p6": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p6"
+    },
+    "tessera_plate_p6": {
+      "textures": "textures/blocks/tessera/tessera_plate_p6"
+    },
+    "tessera_dust_cross_p7": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p7"
+    },
+    "tessera_dust_line_p7": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p7"
+    },
+    "tessera_dust_climb_p7": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p7"
+    },
+    "tessera_plate_p7": {
+      "textures": "textures/blocks/tessera/tessera_plate_p7"
+    },
+    "tessera_dust_cross_p8": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p8"
+    },
+    "tessera_dust_line_p8": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p8"
+    },
+    "tessera_dust_climb_p8": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p8"
+    },
+    "tessera_plate_p8": {
+      "textures": "textures/blocks/tessera/tessera_plate_p8"
+    },
+    "tessera_dust_cross_p9": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p9"
+    },
+    "tessera_dust_line_p9": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p9"
+    },
+    "tessera_dust_climb_p9": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p9"
+    },
+    "tessera_plate_p9": {
+      "textures": "textures/blocks/tessera/tessera_plate_p9"
+    },
+    "tessera_dust_cross_p10": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p10"
+    },
+    "tessera_dust_line_p10": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p10"
+    },
+    "tessera_dust_climb_p10": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p10"
+    },
+    "tessera_plate_p10": {
+      "textures": "textures/blocks/tessera/tessera_plate_p10"
+    },
+    "tessera_dust_cross_p11": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p11"
+    },
+    "tessera_dust_line_p11": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p11"
+    },
+    "tessera_dust_climb_p11": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p11"
+    },
+    "tessera_plate_p11": {
+      "textures": "textures/blocks/tessera/tessera_plate_p11"
+    },
+    "tessera_dust_cross_p12": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p12"
+    },
+    "tessera_dust_line_p12": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p12"
+    },
+    "tessera_dust_climb_p12": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p12"
+    },
+    "tessera_plate_p12": {
+      "textures": "textures/blocks/tessera/tessera_plate_p12"
+    },
+    "tessera_dust_cross_p13": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p13"
+    },
+    "tessera_dust_line_p13": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p13"
+    },
+    "tessera_dust_climb_p13": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p13"
+    },
+    "tessera_plate_p13": {
+      "textures": "textures/blocks/tessera/tessera_plate_p13"
+    },
+    "tessera_dust_cross_p14": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p14"
+    },
+    "tessera_dust_line_p14": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p14"
+    },
+    "tessera_dust_climb_p14": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p14"
+    },
+    "tessera_plate_p14": {
+      "textures": "textures/blocks/tessera/tessera_plate_p14"
+    },
+    "tessera_dust_cross_p15": {
+      "textures": "textures/blocks/tessera/tessera_dust_cross_p15"
+    },
+    "tessera_dust_line_p15": {
+      "textures": "textures/blocks/tessera/tessera_dust_line_p15"
+    },
+    "tessera_dust_climb_p15": {
+      "textures": "textures/blocks/tessera/tessera_dust_climb_p15"
+    },
+    "tessera_plate_p15": {
+      "textures": "textures/blocks/tessera/tessera_plate_p15"
+    },
+    "tessera_on_side": {
+      "textures": "textures/blocks/tessera/tessera_on_side"
+    },
+    "tessera_cmp_out_0": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_0"
+    },
+    "tessera_cmp_out_1": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_1"
+    },
+    "tessera_cmp_out_2": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_2"
+    },
+    "tessera_cmp_out_3": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_3"
+    },
+    "tessera_cmp_out_4": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_4"
+    },
+    "tessera_cmp_out_5": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_5"
+    },
+    "tessera_cmp_out_6": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_6"
+    },
+    "tessera_cmp_out_7": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_7"
+    },
+    "tessera_cmp_out_8": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_8"
+    },
+    "tessera_cmp_out_9": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_9"
+    },
+    "tessera_cmp_out_10": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_10"
+    },
+    "tessera_cmp_out_11": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_11"
+    },
+    "tessera_cmp_out_12": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_12"
+    },
+    "tessera_cmp_out_13": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_13"
+    },
+    "tessera_cmp_out_14": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_14"
+    },
+    "tessera_cmp_out_15": {
+      "textures": "textures/blocks/tessera/tessera_cmp_out_15"
+    },
+    "tessera_note_0": {
+      "textures": "textures/blocks/tessera/tessera_note_0"
+    },
+    "tessera_note_on_0": {
+      "textures": "textures/blocks/tessera/tessera_note_on_0"
+    },
+    "tessera_note_1": {
+      "textures": "textures/blocks/tessera/tessera_note_1"
+    },
+    "tessera_note_on_1": {
+      "textures": "textures/blocks/tessera/tessera_note_on_1"
+    },
+    "tessera_note_2": {
+      "textures": "textures/blocks/tessera/tessera_note_2"
+    },
+    "tessera_note_on_2": {
+      "textures": "textures/blocks/tessera/tessera_note_on_2"
+    },
+    "tessera_note_3": {
+      "textures": "textures/blocks/tessera/tessera_note_3"
+    },
+    "tessera_note_on_3": {
+      "textures": "textures/blocks/tessera/tessera_note_on_3"
+    },
+    "tessera_note_4": {
+      "textures": "textures/blocks/tessera/tessera_note_4"
+    },
+    "tessera_note_on_4": {
+      "textures": "textures/blocks/tessera/tessera_note_on_4"
+    },
+    "tessera_note_5": {
+      "textures": "textures/blocks/tessera/tessera_note_5"
+    },
+    "tessera_note_on_5": {
+      "textures": "textures/blocks/tessera/tessera_note_on_5"
+    },
+    "tessera_note_6": {
+      "textures": "textures/blocks/tessera/tessera_note_6"
+    },
+    "tessera_note_on_6": {
+      "textures": "textures/blocks/tessera/tessera_note_on_6"
+    },
+    "tessera_note_7": {
+      "textures": "textures/blocks/tessera/tessera_note_7"
+    },
+    "tessera_note_on_7": {
+      "textures": "textures/blocks/tessera/tessera_note_on_7"
+    },
+    "tessera_note_8": {
+      "textures": "textures/blocks/tessera/tessera_note_8"
+    },
+    "tessera_note_on_8": {
+      "textures": "textures/blocks/tessera/tessera_note_on_8"
+    },
+    "tessera_note_9": {
+      "textures": "textures/blocks/tessera/tessera_note_9"
+    },
+    "tessera_note_on_9": {
+      "textures": "textures/blocks/tessera/tessera_note_on_9"
+    },
+    "tessera_note_10": {
+      "textures": "textures/blocks/tessera/tessera_note_10"
+    },
+    "tessera_note_on_10": {
+      "textures": "textures/blocks/tessera/tessera_note_on_10"
+    },
+    "tessera_note_11": {
+      "textures": "textures/blocks/tessera/tessera_note_11"
+    },
+    "tessera_note_on_11": {
+      "textures": "textures/blocks/tessera/tessera_note_on_11"
+    },
+    "tessera_note_12": {
+      "textures": "textures/blocks/tessera/tessera_note_12"
+    },
+    "tessera_note_on_12": {
+      "textures": "textures/blocks/tessera/tessera_note_on_12"
+    },
+    "tessera_note_13": {
+      "textures": "textures/blocks/tessera/tessera_note_13"
+    },
+    "tessera_note_on_13": {
+      "textures": "textures/blocks/tessera/tessera_note_on_13"
+    },
+    "tessera_note_14": {
+      "textures": "textures/blocks/tessera/tessera_note_14"
+    },
+    "tessera_note_on_14": {
+      "textures": "textures/blocks/tessera/tessera_note_on_14"
+    },
+    "tessera_note_15": {
+      "textures": "textures/blocks/tessera/tessera_note_15"
+    },
+    "tessera_note_on_15": {
+      "textures": "textures/blocks/tessera/tessera_note_on_15"
+    },
+    "tessera_note_16": {
+      "textures": "textures/blocks/tessera/tessera_note_16"
+    },
+    "tessera_note_on_16": {
+      "textures": "textures/blocks/tessera/tessera_note_on_16"
+    },
+    "tessera_note_17": {
+      "textures": "textures/blocks/tessera/tessera_note_17"
+    },
+    "tessera_note_on_17": {
+      "textures": "textures/blocks/tessera/tessera_note_on_17"
+    },
+    "tessera_note_18": {
+      "textures": "textures/blocks/tessera/tessera_note_18"
+    },
+    "tessera_note_on_18": {
+      "textures": "textures/blocks/tessera/tessera_note_on_18"
+    },
+    "tessera_note_19": {
+      "textures": "textures/blocks/tessera/tessera_note_19"
+    },
+    "tessera_note_on_19": {
+      "textures": "textures/blocks/tessera/tessera_note_on_19"
+    },
+    "tessera_note_20": {
+      "textures": "textures/blocks/tessera/tessera_note_20"
+    },
+    "tessera_note_on_20": {
+      "textures": "textures/blocks/tessera/tessera_note_on_20"
+    },
+    "tessera_note_21": {
+      "textures": "textures/blocks/tessera/tessera_note_21"
+    },
+    "tessera_note_on_21": {
+      "textures": "textures/blocks/tessera/tessera_note_on_21"
+    },
+    "tessera_note_22": {
+      "textures": "textures/blocks/tessera/tessera_note_22"
+    },
+    "tessera_note_on_22": {
+      "textures": "textures/blocks/tessera/tessera_note_on_22"
+    },
+    "tessera_note_23": {
+      "textures": "textures/blocks/tessera/tessera_note_23"
+    },
+    "tessera_note_on_23": {
+      "textures": "textures/blocks/tessera/tessera_note_on_23"
+    },
+    "tessera_note_24": {
+      "textures": "textures/blocks/tessera/tessera_note_24"
+    },
+    "tessera_note_on_24": {
+      "textures": "textures/blocks/tessera/tessera_note_on_24"
+    },
+    "tessera_on_front": {
+      "textures": "textures/blocks/tessera/tessera_on_front"
+    }
+  }
+}

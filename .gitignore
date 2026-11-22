@@ -1,0 +1,14 @@
+build/
+.xmake/
+bin/
+vsxmake*/
+*.user
+# Local test material: third-party packs (never published), tool output
+local/
+tessera-check/
+tessera-preview/
+# Private correspondence
+docs/给XeKr的介绍信.md
+docs/letter-to-BetterResourcePackManager-author.md
+# Converter for a pack whose licence forbids derivatives (local use only)
+tools/convert_xekr.py

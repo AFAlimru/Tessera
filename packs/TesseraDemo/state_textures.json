@@ -1,0 +1,137 @@
+{
+  "format_version": 1,
+  "rules": [
+    {
+      "block": "redstone_wire",
+      "on": [
+        "north",
+        "south",
+        "east",
+        "west"
+      ],
+      "replace": {
+        "redstone_dust_line": "tessera_dust_climb_p{redstone_signal}",
+        "redstone_dust_cross": "tessera_dust_climb_p{redstone_signal}"
+      },
+      "tint": "none"
+    },
+    {
+      "block": "redstone_wire",
+      "replace": {
+        "redstone_dust_cross": "tessera_dust_cross_p{redstone_signal}",
+        "redstone_dust_line": "tessera_dust_line_p{redstone_signal}"
+      },
+      "tint": "none"
+    },
+    {
+      "block": "dropper",
+      "when": {
+        "triggered_bit": true
+      },
+      "replace": {
+        "dropper_front_horizontal": "tessera_on_front",
+        "dropper_front_vertical": "tessera_on_front",
+        "dropper_side": "tessera_on_side",
+        "dropper_top": "tessera_on_side"
+      }
+    },
+    {
+      "block": "dispenser",
+      "when": {
+        "triggered_bit": true
+      },
+      "replace": {
+        "dispenser_front_horizontal": "tessera_on_front",
+        "dispenser_front_vertical": "tessera_on_front",
+        "dispenser_side": "tessera_on_side",
+        "dispenser_top": "tessera_on_side"
+      }
+    },
+    {
+      "block": [
+        "piston",
+        "sticky_piston"
+      ],
+      "when": {
+        "tessera:extended": true
+      },
+      "replace": {
+        "piston_side": "tessera_on_side",
+        "piston_bottom": "tessera_on_side",
+        "piston_top": "tessera_on_front"
+      }
+    },
+    {
+      "block": "observer",
+      "when": {
+        "powered_bit": true
+      },
+      "replace": {
+        "observer_top#0": "tessera_on_side",
+        "observer_top#1": "tessera_on_side",
+        "observer_bottom#0": "tessera_on_side",
+        "observer_bottom#1": "tessera_on_side",
+        "observer_east#0": "tessera_on_side",
+        "observer_east#1": "tessera_on_side",
+        "observer_west#0": "tessera_on_side",
+        "observer_west#1": "tessera_on_side",
+        "observer_north#0": "tessera_on_side",
+        "observer_north#1": "tessera_on_side"
+      }
+    },
+    {
+      "block": "hopper",
+      "when": {
+        "toggle_bit": true
+      },
+      "replace": {
+        "hopper_outside": "tessera_on_side",
+        "hopper_top": "tessera_on_side"
+      }
+    },
+    {
+      "block": [
+        "powered_comparator",
+        "unpowered_comparator"
+      ],
+      "replace": {
+        "comparator_up#0": "tessera_cmp_out_{tessera:output}",
+        "comparator_up#1": "tessera_cmp_out_{tessera:output}"
+      }
+    },
+    {
+      "block": "noteblock",
+      "when": {
+        "tessera:powered": true
+      },
+      "replace": {
+        "noteblock": "tessera_note_on_{tessera:note}"
+      }
+    },
+    {
+      "block": "noteblock",
+      "replace": {
+        "noteblock": "tessera_note_{tessera:note}"
+      }
+    },
+    {
+      "block": "jukebox",
+      "when": {
+        "tessera:has_record": true
+      },
+      "replace": {
+        "jukebox_top": "tessera_on_front"
+      }
+    },
+    {
+      "block": [
+        "light_weighted_pressure_plate",
+        "heavy_weighted_pressure_plate"
+      ],
+      "replace": {
+        "gold_block": "tessera_plate_p{redstone_signal}",
+        "iron_block": "tessera_plate_p{redstone_signal}"
+      }
+    }
+  ]
+}

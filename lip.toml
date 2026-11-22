@@ -1,0 +1,22 @@
+format = 4
+id = "github.com/AFAlimru/Tessera"
+version = "0.1.0"
+
+[info]
+name = "Tessera"
+description = "Java resource pack features for Minecraft Bedrock: block states, 3D models, connected textures (OptiFine CTM), CIT, 1.21.4 item definitions and labPBR, read straight from Java-format files inside Bedrock packs. A library for packs and mods."
+tags = ["library", "visual"]
+
+# Use the bare LeviLamina id, not "#client": LeviLamina releases with a lip.toml (26.60.7 and later)
+# keep the client build as an entry of the "" variant (same as ModMenuBE).
+[[variants.""]]
+side = "client"
+platform = "win-x64"
+preserve = ["mods/Tessera/data/"]
+
+[variants."".deps]
+"github.com/LiteLDev/LeviLamina" = ">26.60.6 <26.61.0"
+
+[[variants."".assets]]
+type = "mcmod"
+urls = ["https://github.com/AFAlimru/Tessera/releases/download/v{{version}}/Tessera-client-windows-x64.zip"]
