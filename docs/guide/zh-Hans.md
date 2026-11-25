@@ -16,9 +16,10 @@ Tessera 是 Minecraft 基岩版的客户端模组（Windows、LeviLamina）。�
   - 音符盒的 `note`／`instrument`、唱片机的 `has_record`、比较器输出、活塞的 `extended`；
   - 红石粉、绊线、玻璃板的连接；
   - 门上下半的 `open`／`hinge`、树叶的 `distance`（枯萎显示）；
-  - 任何方块推算出的 `powered`／`power`，以及标靶、幽匿感测体的 `signal`。
+  - 任何方块推算出的 `powered`／`power`，以及标靶、幽匿感测体的 `signal`；
+  - 被通电激活铁轨锁住的漏斗矿车，车上的漏斗显示为锁住（`enabled=false`）。
 - **连接纹理**（OptiFine CTM 格式，`optifine/ctm/**.properties`）：`ctm_compact`、`fixed`、`random`、`repeat`、`top`、`overlay`、`overlay_fixed`、`overlay_random`、`overlay_repeat`，支持 `matchTiles`／`matchBlocks`、`connect`、`faces`、`heights`、`innerSeams`、`tintIndex`／`tintBlock`。3D 模型的面也会连接（无缝玻璃板）。
-- **流体。** Java 版的水、熔岩贴图取代基岩版的。
+- **流体。** Java 版的水、熔岩贴图取代基岩版的。流动贴图的 `.mcmeta` 写 `"tessera": {"flow_sides": "middle"}` 时，侧面和顶面显示同一块中间部分（箭头、标记在每一面都居中）。
 
 ### 物品
 - **1.21.4 起的物品模型定义**（`assets/minecraft/items/*.json`）：`model`、`composite`、`condition`、`select`、`range_dispatch`，属性如 `display_context`、`damage`、`count`、`custom_name`、`component`（药水内容、附魔、附魔书、迷之炖菜）。
@@ -35,6 +36,7 @@ Tessera 是 Minecraft 基岩版的客户端模组（Windows、LeviLamina）。�
 
 ### 给玩家和作者
 - **F3+R**：不离开世界重新加载资源包（实验性）。
+- **示例资源包：**[发布页面](https://github.com/AFAlimru/Tessera/releases/latest)的 `TesseraRedstoneInfo.mcpack`，用像素数字显示红石信号、音高、各种等级、附魔与药水等级，加上液体流向箭头、无缝玻璃、3D 工作台和灯笼。内容全部由 Tessera 自己的脚本（`tools/make_info_pack.py`）画出。
 - **tessera-tool**：不用开游戏就能检查、预览、打包资源包（[见下方](#tessera-tool)）。
 
 ## 怎么运作

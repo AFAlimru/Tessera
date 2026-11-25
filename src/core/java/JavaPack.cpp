@@ -1495,12 +1495,165 @@ private:
                 }
             }
         }
+        clipHidden(out);
         separateCoplanar(out);
         // Shapes in see-through layers are drawn without depth writes: the later of two faces
         // in one place shows. Faces looking down go first, so from above (as such shapes are
         // mostly seen: string, dust) the upper face shows, as Java's culling has it.
         std::stable_partition(out.begin(), out.end(), [](Json const& q) { return q.value("d", -1) == 0; });
         return out;
+    }
+
+    // A face fully hidden in places by opaque faces lying (almost) on it - a frame or decal
+    // drawn a hair in front of a block's surface (XeKr's glowing outlines) - loses those
+    // places: the faces no longer overlap, so nothing is left to flicker between them at a
+    // distance, and the decal can stay on the surface instead of being pushed out of it.
+    void clipHidden(Json& quads) {
+        constexpr double kNear = 0.01; // blocks: "lying on it"
+        static constexpr int axisOf[6] = {1, 1, 2, 2, 0, 0};
+        static constexpr int signOf[6] = {-1, 1, -1, 1, -1, 1};
+        struct Q {
+            std::array<std::array<double, 3>, 4> p;
+            std::array<double, 8>                uv;
+            int                                  d;
+            double                               off; // along the outward normal
+        };
+        auto read = [](Json const& j) -> std::optional<Q> {
+            if (j.contains("tilt")) return std::nullopt;
+            int const d = j.value("d", -1);
+            if (d < 0 || d > 5 || !j.contains("p") || !j.contains("uv")) return std::nullopt;
+            Q q;
+            q.d = d;
+            for (size_t k = 0; k < 4; ++k)
+                for (size_t c = 0; c < 3; ++c) q.p[k][c] = j["p"][k * 3 + c].get<double>();
+            for (size_t i = 0; i < 8; ++i) q.uv[i] = j["uv"][i].get<double>();
+            q.off = q.p[0][size_t(axisOf[d])] * signOf[d];
+            // Only flat rectangles (p2 = p1 + p3 - p0).
+            for (size_t c = 0; c < 3; ++c)
+                if (std::abs(q.p[2][c] - (q.p[1][c] + q.p[3][c] - q.p[0][c])) > 1e-6) return std::nullopt;
+            return q;
+        };
+        // Is every texel the face shows opaque?
+        auto opaque = [&](Json const& j, Q const& q) {
+            auto it = mResult.textures.find(j.value("t", std::string{}));
+            if (it == mResult.textures.end() || it->second.empty()) return false;
+            Image const& img = it->second;
+            double u0 = 1, u1 = 0, v0 = 1, v1 = 0;
+            for (size_t k = 0; k < 4; ++k)
+                u0 = std::min(u0, q.uv[k * 2]), u1 = std::max(u1, q.uv[k * 2]), v0 = std::min(v0, q.uv[k * 2 + 1]), v1 = std::max(v1, q.uv[k * 2 + 1]);
+            int const x0 = std::clamp(int(std::floor(u0 * img.width + 1e-6)), 0, img.width - 1);
+            int const x1 = std::clamp(int(std::ceil(u1 * img.width - 1e-6)), x0 + 1, img.width);
+            int const y0 = std::clamp(int(std::floor(v0 * img.height + 1e-6)), 0, img.height - 1);
+            int const y1 = std::clamp(int(std::ceil(v1 * img.height - 1e-6)), y0 + 1, img.height);
+            for (int y = y0; y < y1; ++y)
+                for (int x = x0; x < x1; ++x)
+                    if ((img.at(x, y) >> 24) != 255) return false;
+            return true;
+        };
+        std::vector<std::optional<Q>> qs;
+        std::vector<bool>             solid;
+        for (auto const& j : quads) {
+            qs.push_back(read(j));
+            solid.push_back(qs.back() && opaque(j, *qs.back()));
+        }
+        Json result = Json::array();
+        bool changed = false;
+        for (size_t bi = 0; bi < quads.size(); ++bi) {
+            auto const& B = qs[bi];
+            if (!B) {
+                result.push_back(quads[bi]);
+                continue;
+            }
+            // B's own coordinates: s along p0->p1, t along p0->p3.
+            std::array<double, 3> e1, e3;
+            for (size_t c = 0; c < 3; ++c) e1[c] = B->p[1][c] - B->p[0][c], e3[c] = B->p[3][c] - B->p[0][c];
+            double const l1 = e1[0] * e1[0] + e1[1] * e1[1] + e1[2] * e1[2], l3 = e3[0] * e3[0] + e3[1] * e3[1] + e3[2] * e3[2];
+            if (l1 < 1e-12 || l3 < 1e-12) {
+                result.push_back(quads[bi]);
+                continue;
+            }
+            auto st = [&](std::array<double, 3> const& x) {
+                double s = 0, t = 0;
+                for (size_t c = 0; c < 3; ++c) s += (x[c] - B->p[0][c]) * e1[c], t += (x[c] - B->p[0][c]) * e3[c];
+                return std::pair{s / l1, t / l3};
+            };
+            std::vector<std::array<double, 4>> covers; // s0 s1 t0 t1, within [0,1]
+            for (size_t ci = 0; ci < quads.size(); ++ci) {
+                if (ci == bi || !solid[ci]) continue;
+                auto const& C = qs[ci];
+                if (C->d != B->d) continue;
+                double const ahead = C->off - B->off;
+                if (ahead < 1e-7 || ahead > kNear) continue; // must lie just in front
+                double s0 = 1e9, s1 = -1e9, t0 = 1e9, t1 = -1e9;
+                for (auto const& pt : C->p) {
+                    auto [s, t] = st(pt);
+                    s0 = std::min(s0, s), s1 = std::max(s1, s), t0 = std::min(t0, t), t1 = std::max(t1, t);
+                }
+                s0 = std::max(s0, 0.0), s1 = std::min(s1, 1.0), t0 = std::max(t0, 0.0), t1 = std::min(t1, 1.0);
+                if (s1 - s0 > 1e-6 && t1 - t0 > 1e-6) covers.push_back({s0, s1, t0, t1});
+            }
+            if (covers.empty()) {
+                result.push_back(quads[bi]);
+                continue;
+            }
+            // Grid of B cut at every cover edge; keep the cells no cover hides.
+            std::vector<double> ss{0, 1}, ts{0, 1};
+            for (auto const& c : covers) ss.push_back(c[0]), ss.push_back(c[1]), ts.push_back(c[2]), ts.push_back(c[3]);
+            auto uniq = [](std::vector<double>& v) {
+                std::sort(v.begin(), v.end());
+                v.erase(std::unique(v.begin(), v.end(), [](double a, double b) { return std::abs(a - b) < 1e-7; }), v.end());
+            };
+            uniq(ss), uniq(ts);
+            size_t const nx = ss.size() - 1, ny = ts.size() - 1;
+            std::vector<char> keep(nx * ny, 1);
+            for (size_t y = 0; y < ny; ++y)
+                for (size_t x = 0; x < nx; ++x) {
+                    double const cs = (ss[x] + ss[x + 1]) / 2, ct = (ts[y] + ts[y + 1]) / 2;
+                    for (auto const& c : covers)
+                        if (cs > c[0] && cs < c[1] && ct > c[2] && ct < c[3]) keep[y * nx + x] = 0;
+                }
+            changed = true;
+            auto emitCell = [&](double s0, double s1, double t0, double t1) {
+                Json q = quads[bi];
+                std::array<std::pair<double, double>, 4> const corner{{{s0, t0}, {s1, t0}, {s1, t1}, {s0, t1}}};
+                for (size_t k = 0; k < 4; ++k) {
+                    auto [s, t] = corner[k];
+                    for (size_t c = 0; c < 3; ++c) q["p"][k * 3 + c] = B->p[0][c] + s * e1[c] + t * e3[c];
+                    for (size_t c = 0; c < 2; ++c)
+                        q["uv"][k * 2 + c] = B->uv[c] + s * (B->uv[2 + c] - B->uv[c]) + t * (B->uv[6 + c] - B->uv[c]);
+                }
+                result.push_back(std::move(q));
+            };
+            // Runs of kept cells per row, then rows with the same run merged downwards.
+            std::vector<std::array<size_t, 4>> open; // x0 x1 y0 y1(exclusive)
+            for (size_t y = 0; y < ny; ++y) {
+                std::vector<std::pair<size_t, size_t>> runs;
+                for (size_t x = 0; x < nx;) {
+                    if (!keep[y * nx + x]) {
+                        ++x;
+                        continue;
+                    }
+                    size_t e = x;
+                    while (e < nx && keep[y * nx + e]) ++e;
+                    runs.emplace_back(x, e);
+                    x = e;
+                }
+                std::vector<std::array<size_t, 4>> next;
+                for (auto const& [a, b] : runs) {
+                    auto it = std::find_if(open.begin(), open.end(), [&](auto const& o) { return o[0] == a && o[1] == b; });
+                    if (it != open.end()) {
+                        auto o = *it;
+                        o[3] = y + 1;
+                        next.push_back(o);
+                        open.erase(it);
+                    } else next.push_back({a, b, y, y + 1});
+                }
+                for (auto const& o : open) emitCell(ss[o[0]], ss[o[1]], ts[o[2]], ts[o[3]]);
+                open = std::move(next);
+            }
+            for (auto const& o : open) emitCell(ss[o[0]], ss[o[1]], ts[o[2]], ts[o[3]]);
+        }
+        if (changed) quads = std::move(result);
     }
 
     // Java packs float decals a hair (0.01 pixel) above a surface, often several deep; Java's
@@ -1938,7 +2091,10 @@ BakeResult Baker::run() {
                 // leaves that are about to decay), so it never picks a model.
                 // String: suspended_bit has no Java counterpart (and is set on string lying on the ground).
                 if (k != "waterlogged" && !(door && (k == "open_bit" || k == "door_hinge_bit")) && !(leaves && k == "update_bit")
-                    && !(block == "tripwire" && k == "suspended_bit"))
+                    && !(block == "tripwire" && k == "suspended_bit")
+                    // Suspicious sand / gravel: Bedrock's "hanging" (no block below) has no Java
+                    // counterpart and is true when placed by command.
+                    && !(block.starts_with("suspicious_") && k == "hanging"))
                     when[k] = typed(v);
             for (auto const& [jk, bk] : bridge)
                 if (auto it = state.find(jk); it != state.end()) when[bk] = typed(it->second);

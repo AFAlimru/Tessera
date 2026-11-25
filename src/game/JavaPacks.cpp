@@ -688,6 +688,7 @@ constexpr FluidTexture kFluids[] = {
     {"textures/blocks/lava_flow", "block/lava_flow", true},
 };
 std::unordered_map<std::string, std::pair<uint64_t, std::string>> gFluidPng; // Bedrock path -> source hash, PNG
+std::atomic<bool> gFlowSidesMiddle[2]; // water, lava: the pack's flow .mcmeta asks for centred sides
 
 // The Java texture of the pack stack as Bedrock wants it, or nullopt when no pack has it.
 // Frames follow the .mcmeta frame list.
@@ -695,11 +696,16 @@ std::optional<std::string> fluidTexture(ResourceLoader const& loader, FluidTextu
     std::string const base = "assets/minecraft/textures/" + std::string(fluid.java) + ".png";
     std::string       source, meta;
     try {
+        if (fluid.flow) gFlowSidesMiddle[fluid.java == "block/lava_flow"].store(false, std::memory_order_release);
         if (!loader.load(userPath(base), source) || source.empty()) return std::nullopt;
         (void)loader.load(userPath(base + ".mcmeta"), meta);
     } catch (...) {
         return std::nullopt;
     }
+    if (fluid.flow)
+        if (auto j = nlohmann::json::parse(meta, nullptr, false, true); j.is_object())
+            if (auto t = j.find("tessera"); t != j.end() && t->is_object() && t->value("flow_sides", std::string()) == "middle")
+                gFlowSidesMiddle[fluid.java == "block/lava_flow"].store(true, std::memory_order_release);
     uint64_t const hash = fnv(meta.data(), meta.size(), fnv(source.data(), source.size()));
     {
         std::lock_guard lock(gMutex);
@@ -935,6 +941,8 @@ std::vector<std::pair<std::string, std::string>> ItemSession::vanillaDefinitions
     }
     return out;
 }
+
+bool flowSidesMiddle(bool lava) { return gFlowSidesMiddle[lava].load(std::memory_order_acquire); }
 
 std::string rulesJson() {
     std::lock_guard lock(gMutex);

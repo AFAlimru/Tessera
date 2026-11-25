@@ -1,6 +1,6 @@
 format = 4
 id = "github.com/AFAlimru/Tessera"
-version = "0.1.0"
+version = "1.0.0"
 
 [info]
 name = "Tessera"

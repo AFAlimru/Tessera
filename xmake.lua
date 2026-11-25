@@ -19,7 +19,7 @@ set_toolchains("clang-cl")
 
 target("Tessera")
     add_rules("@levibuildscript/linkrule")
-    add_rules("@levibuildscript/modpacker", {modVersion = "0.1.0"})
+    add_rules("@levibuildscript/modpacker", {modVersion = "1.0.0"})
     add_cxflags("/utf-8", "/W4", "/EHs")
     add_cxflags(
         "-Wno-microsoft-cast",

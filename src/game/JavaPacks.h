@@ -28,6 +28,10 @@ void uninstall();
 // state_textures.json format; empty when no active pack has Java assets.
 std::string rulesJson();
 
+// Whether the active pack asks for liquid sides showing the middle of the flowing texture, like the
+// top (its water_flow / lava_flow .mcmeta: "tessera": {"flow_sides": "middle"}).
+bool flowSidesMiddle(bool lava);
+
 // Baked images (atlas texture names) that a Java texture ("glass", "block/glass") was
 // drawn into, for connected-texture rules naming textures a pack's model uses.
 std::vector<std::string> bakedTexturesUsing(std::string const& javaTexture);

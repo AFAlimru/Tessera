@@ -1,4 +1,5 @@
 #include "game/WorldStates.h"
+#include "game/Engine.h"
 
 #include "ll/api/io/Logger.h"
 #include "ll/api/service/TargetedBedrock.h"
@@ -308,7 +309,7 @@ void tick(RenderChunkCoordinator& coordinator) {
             if (changed && gLog && gReadLogBudget.fetch_sub(1) > 0) {
                 std::string text;
                 for (auto const& [key, v] : slot.builtin) text += key + '=' + v.toString() + ' ';
-                gLog->info("block entity @({},{},{}) dim {}: {}", k.x, k.y, k.z, k.dim, text);
+                if (debugLogging()) gLog->info("block entity @({},{},{}) dim {}: {}", k.x, k.y, k.z, k.dim, text);
             }
         }
         ++gPollCursor;
@@ -320,7 +321,7 @@ void tick(RenderChunkCoordinator& coordinator) {
         static auto   last   = std::chrono::steady_clock::now();
         marked += dirty.size();
         if (auto now = std::chrono::steady_clock::now(); now - last > std::chrono::seconds(5)) {
-            if (gLog && marked) gLog->info("world states: {} position rebuild(s) in the last 5 s, {} tracked", marked, gTracked.size());
+            if (gLog && marked && debugLogging()) gLog->info("world states: {} position rebuild(s) in the last 5 s, {} tracked", marked, gTracked.size());
             marked = 0;
             last   = now;
         }
@@ -339,7 +340,7 @@ void noteEvent(int dimension, int x, int y, int z, int instrument, int note) {
         if (sameMap(slot.builtin, values)) return;
         slot.builtin = std::move(values);
         if (gLog && gReadLogBudget.fetch_sub(1) > 0)
-            gLog->info("note block event @({},{},{}) dim {}: note={} instrument={}", x, y, z, dimension, note, instrument);
+            if (debugLogging()) gLog->info("note block event @({},{},{}) dim {}: note={} instrument={}", x, y, z, dimension, note, instrument);
     }
     std::lock_guard lock(gQueueMutex);
     gDirty.push_back(k);

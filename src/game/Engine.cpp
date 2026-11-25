@@ -58,6 +58,14 @@
 #include "mc/world/level/BlockSource.h"
 #include "mc/world/level/block/Block.h"
 #include "mc/world/level/block/NoteBlock.h"
+#include "mc/world/actor/Actor.h"
+#include "mc/world/actor/ActorDataIDs.h"
+#include "mc/world/actor/ActorType.h"
+#include "mc/world/actor/SynchedActorDataEntityWrapper.h"
+#include "mc/entity/components/SynchedActorDataComponent.h"
+#include "mc/world/actor/DataItem.h"
+#include "mc/legacy/ActorRuntimeID.h"
+#include <unordered_set>
 
 #include <nlohmann/json.hpp>
 
@@ -481,6 +489,7 @@ BlockInfo const& infoFor(Block const& block) {
     if (inserted) {
         auto& info        = it->second;
         info.states       = readStates(block.mSerializationId.get(), info.name);
+        if (!tCache.rules) return it->second; // no rules on this thread yet: a bare entry
         auto const& r     = *tCache.rules;
         info.candidate    = !info.name.empty() && r.hasBlock(info.name);
         info.usesVirtual  = info.candidate && r.blockUsesVirtual(info.name);
@@ -920,6 +929,7 @@ void applyGeometry(Tessellator& tess, size_t begin, size_t end, BlockEntry const
             }
         }
     }
+
     glm::vec3 const firstOwn = end > begin ? positions[begin] : glm::vec3{};
     // The block's own faces are not drawn.
     static bool const noFold = std::filesystem::exists(gDataDir / "p5_nofold.txt");
@@ -960,6 +970,7 @@ void applyGeometry(Tessellator& tess, size_t begin, size_t end, BlockEntry const
     }
     float const nudgeWay = !region ? 0.f : ((pos.x + pos.y + pos.z) & 1) ? 1.f : -1.f;
     bool const  freshMesh = positions.empty(); // nothing drawn yet: this sets the mesh's streams
+    bool const paneLike = entry.name.ends_with("_pane") || entry.name.ends_with("_bars");
     std::vector<GeoDraw const*> order;
     order.reserve(shapes.size());
     for (auto const& g : shapes) order.push_back(&g);
@@ -982,6 +993,9 @@ void applyGeometry(Tessellator& tess, size_t begin, size_t end, BlockEntry const
             BlockPos const np{pos.x + kDir[g.cull][0], pos.y + kDir[g.cull][1], pos.z + kDir[g.cull][2]};
             Block const&   nb = region->getBlock(np);
             if (nb.mCachedComponentData->mIsSolid) continue;
+            // Panes and bars hide the faces they press against a pane / bar of the same kind,
+            // as Java's IronBarsBlock does (no seam lines inside a pane wall).
+            if (paneLike && &nb.getBlockType() == &block.getBlockType()) continue;
         }
         // Brightness: Java's per-direction shade (Bedrock's own faces use the same values).
         // Tint: only faces the model marks with a tintindex; grass-coloured blocks take the
@@ -1074,6 +1088,51 @@ LL_TYPE_STATIC_HOOK(
 
 thread_local int tInsideBlockHook = 0; // inside TessellateInWorldHook's origin()
 
+// 0 water, 1 lava, -1 anything else (by block type, remembered per thread).
+int liquidKind(Block const& block) {
+    thread_local std::unordered_map<void const*, int> kinds;
+    void const* type = &block.getBlockType();
+    if (auto it = kinds.find(type); it != kinds.end()) return it->second;
+    auto const& n    = block.getTypeName();
+    int const   kind = n == "minecraft:water" || n == "minecraft:flowing_water" ? 0
+                     : n == "minecraft:lava" || n == "minecraft:flowing_lava"   ? 1
+                                                                                 : -1;
+    kinds.emplace(type, kind);
+    return kind;
+}
+
+// Liquid sides showing the middle of the flowing texture, like the top. The game draws the top
+// from the middle of the flowing tile's 2x2 repeat but the sides from the tile itself, half a
+// tile up and left of it, so no picture is centred on both (Java does the same). A pack asks
+// for this in its flow texture's .mcmeta ("tessera": {"flow_sides": "middle"}); the sides'
+// texture coordinates then move half a tile right and down. Only quads standing upright
+// (one of x or z the same at all four corners) inside the flowing tile move.
+void centreLiquidSides(Tessellator& tess, size_t begin, bool lava) {
+    auto& md        = tess.mMeshData.get();
+    auto& positions = md.mPositions.get();
+    auto& uvs       = md.mTextureUVs[0].get();
+    size_t const end = std::min(positions.size(), uvs.size());
+    if (end <= begin) return;
+    auto const tile = resolveTexture({lava ? "flowing_lava" : "flowing_water_grey", 0}, gGeneration.load(std::memory_order_acquire));
+    if (!tile.ok) return;
+    float const w = tile.rect.u1 - tile.rect.u0, h = tile.rect.v1 - tile.rect.v0;
+    float const eu = w * 0.01f, ev = h * 0.01f;
+    for (size_t q = begin; q + 4 <= end; q += 4) {
+        bool sameX = true, sameZ = true, inside = true;
+        for (size_t i = q; i < q + 4; ++i) {
+            sameX  &= std::abs(positions[i].x - positions[q].x) < 1e-4f;
+            sameZ  &= std::abs(positions[i].z - positions[q].z) < 1e-4f;
+            inside &= uvs[i].x >= tile.rect.u0 - eu && uvs[i].x <= tile.rect.u1 + eu && uvs[i].y >= tile.rect.v0 - ev
+                   && uvs[i].y <= tile.rect.v1 + ev;
+        }
+        if (!(sameX || sameZ) || !inside) continue;
+        for (size_t i = q; i < q + 4; ++i) {
+            uvs[i].x += w * 0.5f;
+            uvs[i].y += h * 0.5f;
+        }
+    }
+}
+
 // Lowest priority = innermost: our UV rewrite happens before any other mod's
 // post-processing of the same call (e.g. Arke reading UVs for mc_midTexCoord).
 LL_TYPE_INSTANCE_HOOK(
@@ -1081,6 +1140,14 @@ LL_TYPE_INSTANCE_HOOK(
     bool, Tessellator& tess, Block const& block, BlockPos const& pos, bool useCache
 ) {
     ++tCache.tessellateCalls;
+    if (int const liquid = liquidKind(block); liquid >= 0 && javapacks::flowSidesMiddle(liquid == 1)) {
+        size_t const before = tess.mMeshData->mPositions->size();
+        bool const   result = origin(tess, block, pos, useCache);
+        try {
+            centreLiquidSides(tess, before, liquid == 1);
+        } catch (...) {}
+        return result;
+    }
     auto const* entry  = entryFor(block, pos, mRegion);
     bool const  ctmOn  = ctm::active() && mRegion;
     if (!entry && !ctmOn) return origin(tess, block, pos, useCache);
@@ -1103,6 +1170,8 @@ LL_TYPE_INSTANCE_HOOK(
     return result;
 }
 
+
+
 // A block drawn as an item (in the hand, in a slot, dropped) is tessellated through here.
 LL_TYPE_INSTANCE_HOOK(
     AppendBlockHook, ll::memory::HookPriority::Normal, BlockTessellator, &BlockTessellator::appendTessellatedBlock, void,
@@ -1118,8 +1187,17 @@ LL_TYPE_INSTANCE_HOOK(
         try {
             BlockPos const pos{0, 0, 0};
             if (auto const* entry = entryFor(block, pos, nullptr)) {
-                if (!entry->geometry.empty()) applyGeometry(tess, before, after, *entry, block, pos, nullptr);
-                else applyEntry(tess, before, after, *entry, pos, &block);
+                if (!entry->geometry.empty()) {
+                    applyGeometry(tess, before, after, *entry, block, pos, nullptr);
+                    // The game builds a block for an entity or the hand centred on the origin
+                    // (-0.5..0.5): the shape, made for the 0..1 cell, is moved there too (else a
+                    // hopper minecart's hopper floats above the cart).
+                    auto&        ps  = tess.mMeshData->mPositions.get();
+                    glm::vec3    mn{1e9f};
+                    for (size_t i = before; i < after && i < ps.size(); ++i) mn = glm::min(mn, ps[i]);
+                    if (after > before && mn.x < -0.25f && mn.z < -0.25f)
+                        for (size_t i = after; i < ps.size(); ++i) ps[i] -= glm::vec3(0.5f, 0.5f, 0.5f);
+                } else applyEntry(tess, before, after, *entry, pos, &block);
             }
         } catch (...) {}
     }
@@ -1256,6 +1334,7 @@ LL_TYPE_INSTANCE_HOOK(
         world::noteEvent(int(region.getDimensionId()), pos.x, pos.y, pos.z, instrument, note);
     } catch (...) {}
 }
+
 
 // Client thread: refresh block-entity snapshots and rebuild chunks whose values changed.
 LL_TYPE_INSTANCE_HOOK(
@@ -1448,6 +1527,103 @@ LL_TYPE_INSTANCE_HOOK(
     return origin(root, std::move(status), done, std::move(group), mip, packs, std::move(outFinal), std::move(outSources));
 }
 
+// A hopper minecart that a powered activator rail has locked shows a locked hopper (Java packs
+// can mark it, as they do the locked hopper block). The game keeps that state on the server
+// only, so the client follows the rule that sets it: a cart on an activator rail is locked
+// while the rail is powered and stays so after leaving it. Only this client's copy of the
+// cart's display block changes; nothing is sent or saved.
+// Reads or sets an entry the actor already has (the game's own setter is not exported).
+DataItem* actorDataItem(Actor& a, ActorDataIDs id) {
+    auto& items = a.mEntityData->mData->mData->mItemsArray.get();
+    auto  i     = size_t(id);
+    return i < items.size() ? items[i].get() : nullptr;
+}
+
+template <class T>
+std::optional<T> getActorData(Actor& a, ActorDataIDs id) {
+    auto* item = actorDataItem(a, id);
+    if (!item) return std::nullopt;
+    auto v = item->getData<T>();
+    if (!v) return std::nullopt;
+    return *v;
+}
+
+template <class T>
+bool setActorData(Actor& a, ActorDataIDs id, T value) {
+    auto* item = actorDataItem(a, id);
+    return item && item->setData(std::move(value));
+}
+
+void lockedMinecarts() {
+    auto client = ll::service::getClientInstance();
+    if (!client) return;
+    auto* region = client->getRegion();
+    if (!region) return;
+    static int tick = 0;
+    if (++tick % 4) return;
+    static std::unordered_map<uint64_t, bool> locked;     // cart -> locked
+    static std::unordered_map<uint64_t, std::pair<int, int>> overridden; // cart -> display id, offset before
+    static Block const* lockedHopper = nullptr;
+    if (!lockedHopper) {
+        // From its saved form: looking it up by name and a state list leaves toggle_bit unset.
+        auto tag = CompoundTag::fromSnbt(R"({"name":"minecraft:hopper","states":{"facing_direction":0,"toggle_bit":1b}})");
+        if (!tag) return;
+        auto b = Block::tryGetFromRegistry(*tag);
+        if (!b) return;
+        std::string    name;
+        StateMap const states = readStates(b->mSerializationId.get(), name);
+        if (name != "minecraft:hopper" || intState(states, "toggle_bit", 0) == 0) return;
+        lockedHopper = b.as_ptr();
+    }
+    std::unordered_set<uint64_t> seen;
+    // The client's actors (the block source's entity query finds none on the client).
+    auto* level = client->getLevel();
+    if (!level) return;
+    for (Actor* a : level->getRuntimeActorList()) {
+        if (!a || a->getEntityTypeId() != ActorType::MinecartHopper) continue;
+        uint64_t const id = a->getRuntimeID().rawID;
+        seen.insert(id);
+        Vec3 const&    p = a->getPosition();
+        for (int dy : {0, -1}) {
+            BlockPos const bp{int(std::floor(p.x)), int(std::floor(p.y)) + dy, int(std::floor(p.z))};
+            // (not infoFor: its cache needs the rules, loaded on the threads that draw)
+            std::string    name;
+            StateMap const states = readStates(region->getBlock(bp).mSerializationId.get(), name);
+            if (name == "minecraft:activator_rail") {
+                locked[id] = intState(states, "rail_data_bit", 0) != 0;
+                break;
+            }
+        }
+        bool  isOn  = locked.count(id) && locked[id];
+        auto  it    = overridden.find(id);
+        if (isOn && it == overridden.end()) {
+            auto tile   = getActorData<int>(*a, ActorDataIDs::DisplayTileRuntimeId);
+            auto custom = getActorData<schar>(*a, ActorDataIDs::CustomDisplay);
+            auto offset = getActorData<int>(*a, ActorDataIDs::DisplayOffset);
+            if (!tile || !custom || !offset || *custom != 0) continue; // missing, or a cart showing another block
+            overridden[id] = {*tile, *offset};
+            if (!setActorData(*a, ActorDataIDs::DisplayTileRuntimeId, int(lockedHopper->mNetworkId))) continue;
+            setActorData(*a, ActorDataIDs::DisplayOffset, 1); // the hopper's own height in the cart
+            setActorData(*a, ActorDataIDs::CustomDisplay, schar(1));
+        } else if (!isOn && it != overridden.end()) {
+            setActorData(*a, ActorDataIDs::DisplayTileRuntimeId, it->second.first);
+            setActorData(*a, ActorDataIDs::DisplayOffset, it->second.second);
+            setActorData(*a, ActorDataIDs::CustomDisplay, schar(0));
+            overridden.erase(it);
+        }
+    }
+    std::erase_if(locked, [&](auto const& e) { return !seen.count(e.first); });
+    std::erase_if(overridden, [&](auto const& e) { return !seen.count(e.first); });
+}
+
+// The local player's tick runs on the client's game thread, where its actors live.
+LL_TYPE_INSTANCE_HOOK(LocalPlayerTickHook, ll::memory::HookPriority::Normal, LocalPlayer, &LocalPlayer::$normalTick, void) {
+    origin();
+    try {
+        lockedMinecarts();
+    } catch (...) {}
+}
+
 // Reload resource packs without leaving the world (Java's F3+T; T opens chat
 // here, so the key is F3+R). Experimental.
 LL_TYPE_INSTANCE_HOOK(EndFrameHook, ll::memory::HookPriority::Normal, MinecraftGame, &MinecraftGame::endFrame, void) {
@@ -1578,6 +1754,7 @@ bool install(ll::io::Logger& logger, std::filesystem::path const& dataDir) {
     failures += CoordinatorTickHook::hook() != 0;
     failures += NoteEventHook::hook() != 0;
     failures += EndFrameHook::hook() != 0;
+    failures += LocalPlayerTickHook::hook() != 0;
     failures += CreateAtlasHook::hook() != 0;
     failures += UploadTextureHook::hook() != 0;
     failures += UnloadTextureHook::hook() != 0;
@@ -1599,6 +1776,7 @@ void uninstall() {
     UploadTextureHook::unhook();
     CreateAtlasHook::unhook();
     EndFrameHook::unhook();
+    LocalPlayerTickHook::unhook();
     NoteEventHook::unhook();
     CoordinatorTickHook::unhook();
     ChunkBuildHook::unhook();

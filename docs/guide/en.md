@@ -16,9 +16,10 @@ Contents: [What it can do](#what-it-can-do) · [How it works](#how-it-works) · 
   - note block `note` / `instrument`, jukebox `has_record`, comparator output, piston `extended`;
   - redstone dust and tripwire connections, glass pane connections;
   - door halves (`open` / `hinge` on both halves), leaves `distance` (decay display);
-  - an estimated `powered` / `power` for any block, and `signal` for targets and sculk sensors.
+  - an estimated `powered` / `power` for any block, and `signal` for targets and sculk sensors;
+  - a hopper minecart locked by a powered activator rail shows its hopper as locked (`enabled=false`).
 - **Connected textures** (OptiFine CTM format, `optifine/ctm/**.properties`): `ctm_compact`, `fixed`, `random`, `repeat`, `top`, `overlay`, `overlay_fixed`, `overlay_random`, `overlay_repeat`, with `matchTiles` / `matchBlocks`, `connect`, `faces`, `heights`, `innerSeams`, `tintIndex` / `tintBlock`. They also apply to the faces of 3D models (seamless glass panes).
-- **Fluids.** Java water and lava textures replace Bedrock's.
+- **Fluids.** Java water and lava textures replace Bedrock's. A flow texture whose `.mcmeta` has `"tessera": {"flow_sides": "middle"}` shows the same middle part on the sides as on the top (for arrows and marks centred on every face).
 
 ### Items
 - **1.21.4+ item model definitions** (`assets/minecraft/items/*.json`): `model`, `composite`, `condition`, `select`, `range_dispatch`, with properties such as `display_context`, `damage`, `count`, `custom_name`, `component` (potion contents, enchantments, stored enchantments, suspicious stew).
@@ -35,6 +36,7 @@ Contents: [What it can do](#what-it-can-do) · [How it works](#how-it-works) · 
 
 ### For players and authors
 - **F3+R** reloads resource packs without leaving the world (experimental).
+- **Example pack:** `TesseraRedstoneInfo.mcpack` on the [releases page](https://github.com/AFAlimru/Tessera/releases/latest) shows redstone power, note pitch, levels and enchantment / potion levels as pixel digits, fluid flow arrows, plus seamless glass and a 3D crafting table and lantern. Everything in it is drawn by Tessera's own script (`tools/make_info_pack.py`).
 - **tessera-tool** checks, previews and packages packs without the game ([below](#tessera-tool)).
 
 ## How it works
